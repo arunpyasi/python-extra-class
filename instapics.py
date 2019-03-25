@@ -1,17 +1,17 @@
 from bs4 import BeautifulSoup
+import selenium.webdriver as webdriver
 import requests
 
-class Instagram:
-    def get_page(self,user_name):
-        try:
-            r = requests.get("https://www.instagram.com/"+user_name)
-        except Exception as ex:
-            print("Failed to get instagram account")
-            r = None
-        return r
+url = 'http://instagram.com/pyasiarun/'
+driver = webdriver.Firefox()
 
-instaobj = Instagram()
-username = "saurav_mgr"
-page_resp = instaobj.get_page(username)
-print("status code" , page_resp.status_code)
-# print("text : ",page_resp.text)
+
+driver.get(url)
+
+soup = BeautifulSoup(driver.page_source, "html.parser")
+images = soup.find_all(class_="FFVAD")
+for x in images:
+    img_url = x["src"]
+    r = requests.get(img_url)
+    with open(str(images.index(x))+".jpg", "wb")  as f:
+        f.write(r.content)
